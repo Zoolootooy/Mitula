@@ -32,7 +32,7 @@ class Main
         $this->data = new Data();
 
         $this->dataCache->flushAll();
-        if (!file_exists('output/None') ) {
+        if (!file_exists('output/None')) {
             mkdir('output/None', 0777);
         }
         $tipos = [
@@ -70,6 +70,38 @@ class Main
             'Villa',
             'Quinta',
         ];
+
+        $prices = [
+            0,
+            100000,
+            200000,
+            300000,
+            400000,
+            500000,
+            600000,
+            600000,
+            800000,
+            900000,
+            1000000,
+            2000000,
+            3000000,
+            4000000,
+            5000000,
+            6000000,
+            7000000,
+            8000000,
+            9000000,
+            10000000,
+            12500000,
+            20000000,
+            27500000,
+            35000000,
+            42500000,
+            50000000,
+            75000000,
+            100000000,
+            500000000
+        ];
         $localities = file(__DIR__ . '/../localites.txt');
 
         for ($i = 0; $i < count($localities); $i++) {
@@ -81,15 +113,38 @@ class Main
             array_push($this->parsed_links, $a['link']);
         }
 
+//        for ($i = 0; $i < count($localities); $i++) {
+//            $nivel2 = str_replace(' ', '+', $localities[$i]);
+//            $q = str_replace(' ', '-', $localities[$i]);
+//
+//            for ($j = 1; $j <= 2; $j++) {
+//                for ($k = 0; $k < count($tips); $k++) {
+//                    $url_base = "https://casas.mitula.mx/searchRE/orden-0/op-" . $j . "/tipo-" . $tips[$k] . "/precio_min-0/precio_max-10000000/q-" . $q . "/pag-1";
+//                    if (! in_array($url_base, $this->parsed_links)) {
+//                        $this->dataCache->cacheLink($url_base);
+//                    } else {
+//                        error_log("[" . date("j F Y G:i:s") . "] Is already parsed: ". $url_base . "\n", 3,
+//                            __DIR__ . "/../../logs/logfile.log");
+//                    }
+//                }
+//            }
+//        }
         for ($i = 0; $i < count($localities); $i++) {
             $nivel2 = str_replace(' ', '+', $localities[$i]);
             $q = str_replace(' ', '-', $localities[$i]);
 
             for ($j = 1; $j <= 2; $j++) {
                 for ($k = 0; $k < count($tips); $k++) {
-                    $url_base = "https://casas.mitula.mx/searchRE/nivel2-" . $nivel2 . "/orden-0/op-" . $j . "/tipo-" . $tips[$k] . "/precio_min-0/precio_max-10000000/q-" . $q . "/pag-1";
-                    if (! in_array($url_base, $this->parsed_links)) {
-                        $this->dataCache->cacheLink($url_base);
+                    for ($l = 0; $l < count($prices) - 1; $l++) {
+                        $priceMin = $prices[$l];
+                        $priceMax = $prices[$l + 1] + 1;
+                        $url_base = "https://casas.mitula.mx/searchRE/orden-0/nivel2-" . $nivel2 . "/op-" . $j . "/tipo-" . $tips[$k] . "/precio_min-" . $priceMin . "/precio_max-" . $priceMax . "/q-" . $q . "/pag-1";
+                        if (!in_array($url_base, $this->parsed_links)) {
+                            $this->dataCache->cacheLink($url_base);
+                        } else {
+                            error_log("[" . date("j F Y G:i:s") . "] Is already parsed: " . $url_base . "\n", 3,
+                                __DIR__ . "/../../logs/logfile.log");
+                        }
                     }
                 }
             }
@@ -122,11 +177,13 @@ class Main
 
                     case 0:
                         $PageParser = new PageParser();
-                        if ($PageParser->parse($linkData, $this->client) == false){
-                            $this->dataCache->cacheLink($linkData);
-                            error_log("[" . date("j F Y G:i:s") . "] Returned ". $linkData . "\n", 3,
-                                __DIR__ . "/../../logs/logfile.log");
-                        }
+                        $p = $PageParser->parse($linkData, $this->client);
+//                        if (($p == false) || ($p == null)) {
+//                            $this->dataCache->cacheLink($linkData);
+//                            error_log("[" . date("j F Y G:i:s") . "] Returned " . $linkData . "\n", 3,
+//                                __DIR__ . "/../../logs/logfile.log");
+//
+//                        }
                         exit();
 
                     default:

@@ -27,9 +27,23 @@ class Data
         return $this->conn->query("SELECT link FROM parsered_links");
     }
 
-    public function setParsedLink($link)
+    public function checkParsedLink($link)
     {
-        $this->conn->query("INSERT INTO parsered_links (link) VALUES (?)", [$link]);
+        return $this->conn->query("SELECT id FROM parsered_links WHERE link = ?", [$link])[0]['id'];
+    }
+
+    public function setParsedLink($link, $status)
+    {
+        $id = self::checkParsedLink($link);
+        if ($id == null) {
+            $executeQuery =  $this->conn->query("INSERT INTO parsered_links (link, status) VALUES (?,?)", [$link, $status]);
+            if ($executeQuery) {
+                return $this->conn->lastInsertId();
+            }
+            return false;
+        } else {
+            return $id;
+        }
     }
 
     public function checkAd($ad)

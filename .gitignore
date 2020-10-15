@@ -3,3 +3,4 @@
 /src/output
 /src/app/config/database_config.php
 /src/app/config/redis_config.php
+/src/logs/logfile.log

@@ -21,6 +21,12 @@ class DataCache
         $this->config = require __DIR__ . '/../config/redis_config.php';
     }
 
+    public function checkList($key)
+    {
+        $this->redis->connect($this->config['host'], $this->config['port']);
+        return $this->redis->lLen('link');
+    }
+
     /**
      * Cache proxy.
      * @param $proxy
