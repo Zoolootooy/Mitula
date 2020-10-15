@@ -49,7 +49,7 @@ class Content
                 }
             } catch (RequestException $e) {
                 if ($e->getResponse() != null) {
-                    if ($e->getResponse()->getStatusCode() != '200') {
+                    if ($e->getResponse()->getStatusCode() == '404') {
                         error_log("[" . date("j F Y G:i:s") . "] Failed to parse: " . $link . " Error " . $e->getResponse()->getStatusCode() . "\n", 3,
                             __DIR__ . "/../../logs/logfile.log");
                         $data->setParsedLink($link, '404');
